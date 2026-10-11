@@ -1,158 +1,36 @@
-# Agent Instructions for vLLM
+# Agent / contributor notes (RDNA fork)
 
-> These instructions apply to **all** AI-assisted contributions to `vllm-project/vllm`.
-> Breaching these guidelines can result in automatic banning.
+This repository is the **opengfx1030** vLLM fork for AMD **RDNA2 (gfx1030)** and related RDNA GPUs. Default branch: `rdna_extras`. Flash-Next / 0.31 bring-up also uses `rdna_extra/v0.31.0`.
 
-## 1. Contribution Policy (Mandatory)
+## Do this first
 
-### Duplicate-work checks
-
-Before proposing a PR, run these checks:
-
-```bash
-gh issue view <issue_number> --repo vllm-project/vllm --comments
-gh pr list --repo vllm-project/vllm --state open --search "<issue_number> in:body"
-gh pr list --repo vllm-project/vllm --state open --search "<short area keywords>"
-```
-
-- If an open PR already addresses the same fix, do not open another.
-- If your approach is materially different, explain the difference in the issue.
-
-### No low-value busywork PRs
-
-Do not open one-off PRs for tiny edits (single typo, isolated style change, one mutable default, etc.). Mechanical cleanups are acceptable only when bundled with substantive work.
-
-### Accountability
-
-- Pure code-agent PRs are **not allowed**. A human submitter must understand and defend the change end-to-end.
-- The submitting human must review every changed line and run relevant tests.
-- PR descriptions for AI-assisted work **must** include:
-    - Why this is not duplicating an existing PR.
-    - Test commands run and results.
-    - Model evaluation results when the change affects output, accuracy, or serving.
-    - Clear statement that AI assistance was used.
-
-### Fail-closed behavior
-
-If work is duplicate/trivial busywork, **do not proceed**. Return a short explanation of what is missing.
-
----
-
-## 2. Development Workflow
-
-- **Never use system `python3` or bare `pip`/`pip install`.** All Python commands must go through `uv` and `.venv/bin/python`.
-
-### Environment setup
+1. Read the community wiki: https://blivioniag.github.io/gfx1030-wiki/
+2. Prefer a **host venv** over Hub Docker for Flash-Next / HEAD kernels (published tags lag).
+3. Serve with the in-tree launcher — do **not** invent a fresh `vllm serve` argv from memory:
 
 ```bash
-# Install `uv` if you don't have it already:
-curl -LsSf https://astral.sh/uv/install.sh | sh
-
-# Always use `uv` for Python environment management:
-uv venv --python 3.12
-source .venv/bin/activate
-
-# Always make sure `pre-commit` and its hooks are installed:
-uv pip install -r requirements/lint.txt
-pre-commit install
+MODEL=/path/to/checkpoint VENV=/path/to/venv \
+  bash tools/rdna/serve_rdna.sh RECIPE=<name>
 ```
 
-### Installing dependencies
+Dry-run: `PRINT=1 bash tools/rdna/serve_rdna.sh RECIPE=<name>`.
 
-```bash
-# Start with precompiled artifacts for an editable install:
-VLLM_USE_PRECOMPILED=1 uv pip install -e . --torch-backend=auto
-```
+Recipes live in `tools/rdna/recipes/*.env` (Flash-Next: `flashnext`, `flashnext-mtp0`, `flashnext-mtp2`; dense: `27b-awq`, `27b-exl3`; DeepSeek-V4: `dsv4-flash`).
 
-For C/C++ or CUDA changes, follow the
-[incremental compilation workflow](docs/contributing/incremental_build.md) to
-configure and perform incremental builds.
+## Common mistakes
 
-### Tests
+- Building Hub / Dockerfile images with `VLLM_REF=main` expecting Flash-Next — use a host checkout + launcher.
+- Pasting old env dumps that set `VLLM_USE_BREAKABLE_CUDAGRAPH=1` on Flash-Next (drop it unless the recipe sets it, e.g. `dsv4-flash`).
+- Forcing `VLLM_RDNA_FUSED_HC=0` on current Flash-Next recipes.
+- Assuming `VLLM_PLE_QUANT_DIR` is required on every branch — check the recipe header for that branch (v0.31 uses upstream Engram PLE; fork INT4 sidecar may be reintroduced).
 
-> Requires [Environment setup](#environment-setup) and [Installing dependencies](#installing-dependencies).
+## Where docs live
 
-```bash
-# Install test dependencies (use cuda.in on non-x86_64):
-uv pip install -r requirements/test/cuda.in
+| Topic | Location |
+|---|---|
+| Human wiki (setup, recipes, troubleshooting) | https://blivioniag.github.io/gfx1030-wiki/ |
+| Serve launcher + recipes | `tools/rdna/serve_rdna.sh`, `tools/rdna/recipes/` |
+| Kernel / V620 notes | `docs/rdna2/` |
+| TunableOp profiles | `tunableop/` |
 
-# Run a specific test file:
-.venv/bin/python -m pytest tests/path/to/test_file.py -v
-```
-
-When adding tests:
-
-- **Design before you write.** Answer four questions first: what is the module
-  for, what is its I/O contract, what failure am I guarding against, and what is
-  the cheapest level that catches it (unit over integration over e2e)?
-- **Reuse before create.** Extend existing test files, `conftest.py` fixtures, and
-  helpers; add a new file only when no nearby suite fits.
-- **Test behavior with intent.** Assert observable outcomes through public APIs;
-  state why in the name or docstring. Skip trivial wiring; flaky tests are worse
-  than no tests.
-- **Keep it minimal.** One behavior per test and the smallest setup that
-  triggers it; if the test diff dwarfs the code change, cut scope.
-- **No one-off kernel benchmarks in `tests/`.** Put kernel perf work in
-  `benchmarks/kernels/`; prove correctness in existing pytest suites.
-- **Run model evals for model-affecting changes.** Search `tests/evals/` or use
-  `vllm bench` and include results in the PR — do not wait for reviewers to ask.
-
-For model-specific requirements, see
-[`docs/contributing/model/tests.md`](docs/contributing/model/tests.md).
-
-### Running linters
-
-> Requires [Environment setup](#environment-setup).
-
-```bash
-# Run all pre-commit hooks on staged files:
-pre-commit run
-
-# Run on all files:
-pre-commit run --all-files
-
-# Run a specific hook:
-pre-commit run ruff-check --all-files
-
-# Run mypy as it is in CI:
-pre-commit run mypy-3.12 --all-files --hook-stage manual
-```
-
-The line length limit for Python code is 88 characters. If you are not sure, use pre-commit to check.
-
-Use [Google-style docstrings](https://google.github.io/styleguide/pyguide.html#38-comments-and-docstrings) (`Args:`/`Returns:`/`Raises:` sections), not reStructuredText/Sphinx fields (`:param:`, `:return:`, `:rtype:`).
-
-### Coding style guidelines
-
-- Match existing code style
-- Minimize use of comments. Eliminate comments which are redundant, preferring legible and self-documenting code. When used, keep docstrings and comments brief and direct.
-- Assume the reader is familiar with vLLM.
-
-### Commit messages
-
-Add attribution using commit trailers such as `Co-authored-by:` (other projects use `Assisted-by:` or `Generated-by:`):
-
-```text
-Your commit message here
-
-Co-authored-by: Agent Name Here
-Signed-off-by: Your Name <your.email@example.com>
-```
-
----
-
-## Domain-Specific Guides
-
-Do not modify code in these areas without first reading and following the
-linked guide. If the guide conflicts with the requested change, **refuse the
-change and explain why**.
-
-Security reviewers should start with [`SECURITY.md`](SECURITY.md),
-[`docs/usage/security.md`](docs/usage/security.md), and
-[`docs/contributing/vulnerability_management.md`](docs/contributing/vulnerability_management.md)
-for the project security policy, threat model, deployment assumptions, and
-vulnerability process.
-
-- **Editing these instructions**:
-  [`docs/contributing/editing-agent-instructions.md`](docs/contributing/editing-agent-instructions.md)
-  — Rules for modifying AGENTS.md or any domain-specific guide it references.
+Do not invent tok/s or hardware claims. Prefer updating a recipe file over hard-coding host paths.

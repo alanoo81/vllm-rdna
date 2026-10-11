@@ -1,4 +1,26 @@
 <!-- markdownlint-disable MD001 MD041 -->
+
+> **RDNA fork (`opengfx1030/vllm-rdna`)** — default branch **`rdna_extras`**.
+> This is **not** stock upstream vLLM. For AMD **gfx1030 / RDNA2** (and related RDNA)
+> serving, start here — not from the generic install section below.
+>
+> ### Serve with the in-tree launcher
+>
+> Hub Docker tags **lag HEAD**. Build a host venv, then:
+>
+> ```bash
+> MODEL=/path/to/checkpoint VENV=/path/to/venv \
+>   bash tools/rdna/serve_rdna.sh RECIPE=flashnext-mtp2
+> ```
+>
+> - Recipes: [`tools/rdna/recipes/`](tools/rdna/recipes/) (`flashnext`, `flashnext-mtp0`, `flashnext-mtp2`, `27b-awq`, `27b-exl3`, `dsv4-flash`, …)
+> - Dry-run: `PRINT=1 bash tools/rdna/serve_rdna.sh RECIPE=<name>`
+> - Same launcher path on [`rdna_extra/v0.31.0`](https://github.com/opengfx1030/vllm-rdna/tree/rdna_extra/v0.31.0)
+> - Wiki (host venv, troubleshooting, privacy-safe recipes): https://blivioniag.github.io/gfx1030-wiki/
+> - Agent pointer: [`AGENTS.md`](AGENTS.md)
+
+---
+
 <p align="center">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/vllm-project/vllm/main/docs/assets/logos/vllm-logo-text-dark.png">
@@ -62,6 +84,8 @@ vLLM seamlessly supports 200+ model architectures on Hugging Face, including:
 Find the full list of supported models [here](https://docs.vllm.ai/en/latest/models/supported_models.html).
 
 ## Getting Started
+
+> **RDNA / gfx1030:** do **not** start with `uv pip install vllm`. Use the [launcher banner](#) at the top of this README and the [gfx1030 wiki](https://blivioniag.github.io/gfx1030-wiki/).
 
 Install vLLM with [`uv`](https://docs.astral.sh/uv/) (recommended) or `pip`:
 
