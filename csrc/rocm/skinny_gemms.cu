@@ -257,6 +257,13 @@ __global__ void LLGemm1_kernel(const scalar_t* in_a, const scalar_t* in_b,
 
   if (qwarpid < NUM_A_ROWS_PER_BLOCK) {
     acc[qwarpid] = qthreadid < num_warps ? red_smem[qwarpid][qthreadid] : 0.f;
+
+    // wave32 can produce up to 32 partial waves for LLMM1's K <= 8192
+    // range. The original 16-lane second-stage reduction consumed only
+    // partials 0..15. Fold partials 16..31 into those same 16 lanes first.
+    if (WARP_SIZE == 32 && qthreadid + 16 < num_warps) {
+      acc[qwarpid] += red_smem[qwarpid][qthreadid + 16];
+    }
 #pragma unroll
     for (int mask = 16 / 2; mask >= 1; mask /= 2) {
       acc[qwarpid] += __shfl_xor(acc[qwarpid], mask);
