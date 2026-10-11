@@ -85,7 +85,7 @@ Find the full list of supported models [here](https://docs.vllm.ai/en/latest/mod
 
 ## Getting Started
 
-> **RDNA / gfx1030:** do **not** start with `uv pip install vllm`. Use the [launcher banner](#) at the top of this README and the [gfx1030 wiki](https://blivioniag.github.io/gfx1030-wiki/).
+> **RDNA / gfx1030:** do **not** start with `uv pip install vllm`. Use the **RDNA fork** banner at the top of this README and the [gfx1030 wiki](https://blivioniag.github.io/gfx1030-wiki/).
 
 Install vLLM with [`uv`](https://docs.astral.sh/uv/) (recommended) or `pip`:
 
