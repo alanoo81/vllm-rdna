@@ -222,19 +222,26 @@ Where those implementations disagree, this server follows the column below.
 
 #59299 registers `POST /v1/systemone` from
 `vllm.entrypoints.generate.structured_decisions` behind
-`--enable-structured-decisions`. This package does not occupy that path.
-If that route is already on the app, this server does not register a second
-one. The loaded encoder is published as `systemone_backend_provider` and
-answers only when the request `model` is the configured decision model.
-Other models stay on the upstream handler. A rebase that contains #59299
-deletes `vllm/entrypoints/systemone` instead of merging two protocol trees.
+`--enable-structured-decisions`. vLLM v0.31.0, which `rdna_extras` is ported
+onto, does not include that route. The structured-diffusion example server
+is a separate process and does not register on the API server. This package
+does not occupy the #59299 path. If that route is already on the app, this
+server does not register a second one. The loaded encoder is published as
+`systemone_backend_provider` and answers only when the request `model` is
+the configured decision model. Other models stay on the upstream handler.
+A rebase that contains #59299 deletes `vllm/entrypoints/systemone` instead
+of merging two protocol trees.
 
 ## LiteLLM
 
-LiteLLM only proxies OpenAI routes it knows. `/v1/systemone` is not one of
-them, so a pass-through entry has to point at whichever server is live:
-the vLLM API server in Mode A, or the standalone server in Mode B. Clients
-then keep a single path.
+LiteLLM 1.104.2 adds its own `POST /v1/systemone`. That route calls a
+Decisions model from `model_list` (TypeSafe, Perplexity, `hosted_vllm` for
+a build that contains vLLM #59299, and others). It does not load GLiNER2
+and it does not forward the raw body to this server. Keep a
+`pass_through_endpoints` entry pointed at whichever server is live: the
+vLLM API server in Mode A, or the standalone server in Mode B. Clients
+then keep a single path either way. LiteLLM lets an existing pass-through
+on a path answer that path.
 
 ```yaml
 general_settings:

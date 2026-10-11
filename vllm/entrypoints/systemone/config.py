@@ -152,6 +152,7 @@ def validate_systemone_args(args: Namespace) -> None:
 
     Raises:
         ValueError: The selected backend is missing a required setting.
+
     """
     if not hasattr(args, "systemone_backend") and not os.environ.get(
         "VLLM_SYSTEMONE_BACKEND"

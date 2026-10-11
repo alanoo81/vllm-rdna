@@ -84,6 +84,7 @@ def parse_request(raw: bytes, *, default_model: str | None) -> DecisionRequest:
 
     Raises:
         SystemOneError: The body is not a valid System One request (HTTP 400).
+
     """
     if len(raw) > MAX_BODY_BYTES:
         raise SystemOneError(f"request body exceeds {MAX_BODY_BYTES} bytes", 400)
@@ -148,6 +149,7 @@ def build_local_response(
 
     Raises:
         SystemOneError: A required probability is missing or not in ``[0, 1]``.
+
     """
     answers: dict[str, Any] = {}
     for task in tasks:

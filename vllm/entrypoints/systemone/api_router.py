@@ -52,6 +52,7 @@ def register_structured_decisions_api_router(app: FastAPI) -> bool:
 
     Returns:
         True when this module registered the route.
+
     """
     if systemone_route_registered(app):
         app.state.systemone_stepped_aside = True

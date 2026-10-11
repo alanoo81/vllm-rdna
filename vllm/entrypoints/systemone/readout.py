@@ -63,6 +63,7 @@ def assert_labels_match(tasks: Sequence[TaskPlan], readout: LoadedReadout) -> No
 
     Raises:
         SystemOneError: HTTP 400, one question at a time.
+
     """
     for task in tasks:
         for label in task.labels:

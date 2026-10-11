@@ -25,6 +25,7 @@ def parse_device(device: str) -> tuple[str, int | None]:
 
     Raises:
         ValueError: The device string is not ``cpu`` or ``cuda:N``.
+
     """
     text = device.strip().lower()
     if text == "cpu":
@@ -51,6 +52,7 @@ def resolve_dtype(device_kind: str, requested: str | None) -> str:
 
     Raises:
         ValueError: The dtype is missing or is bfloat16.
+
     """
     if requested is None or requested.strip().lower() in {"", "auto"}:
         return "float32" if device_kind == "cpu" else "float16"
@@ -81,6 +83,7 @@ def read_visible_devices() -> list[str] | None:
 
     Raises:
         SystemOneStartupError: The two masks disagree or contain an empty slot.
+
     """
     hip = os.environ.get("HIP_VISIBLE_DEVICES") or ""
     cuda = os.environ.get("CUDA_VISIBLE_DEVICES") or ""
@@ -130,6 +133,7 @@ def assert_spare_device(device: str, args: Namespace) -> tuple[str, int]:
     Raises:
         SystemOneStartupError: The device is not a spare GPU in this process.
         ValueError: The device string is not ``cuda:N``.
+
     """
     kind, index = parse_device(device)
     if kind != "cuda" or index is None:
@@ -185,6 +189,7 @@ def assert_free_vram(index: int, reserve_gb: float) -> None:
     Raises:
         SystemOneStartupError: Free memory is below the reserve, or it cannot
             be read.
+
     """
     import torch
 
@@ -216,6 +221,7 @@ def open_decision_stream(index: int):
 
     Raises:
         SystemOneStartupError: The new stream is the default stream.
+
     """
     import torch
 
