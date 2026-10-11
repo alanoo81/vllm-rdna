@@ -27,6 +27,7 @@ def apply_expert_tables(
 
     Returns:
         ``[N, H]`` float64 weighted outputs.
+
     """
     if expert_ids.shape != router_weights.shape:
         raise ValueError("ids and weights must share a shape")

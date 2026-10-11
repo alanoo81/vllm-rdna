@@ -15,6 +15,7 @@ def activation_bytes(hidden_size: int, cold_pairs: int) -> int:
 
     Returns:
         ``hidden_size * 2 * cold_pairs``.
+
     """
     if hidden_size < 0 or cold_pairs < 0:
         raise ValueError("sizes must be non-negative")
@@ -32,6 +33,7 @@ def decode_round_trips(num_moe_layers: int) -> int:
 
     Returns:
         The layer count. Empty-cold skips are not subtracted here.
+
     """
     if num_moe_layers < 0:
         raise ValueError("layer count must be non-negative")
@@ -48,6 +50,7 @@ def transfer_seconds(nbytes: int, bandwidth: str, latency: str) -> str:
 
     Returns:
         An unevaluated expression.
+
     """
     if nbytes < 0:
         raise ValueError("nbytes must be non-negative")

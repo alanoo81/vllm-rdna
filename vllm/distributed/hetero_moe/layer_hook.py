@@ -58,6 +58,7 @@ def split_routed_forward(
 
     Raises:
         RuntimeError: The current stream is capturing a graph.
+
     """
     assert_outside_capture()
     runtime = get_runtime()

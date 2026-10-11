@@ -46,6 +46,7 @@ class FastTierDevice:
         arch: GPU arch string used to reject the wrong fatbin.
         implemented: False reserves the name without a code path.
         product: Board the class was written for.
+
     """
 
     name: str
@@ -105,6 +106,7 @@ def resolve_fast_tier(name: str) -> FastTierDevice:
     Raises:
         KeyError: The name is not registered.
         NotImplementedError: The class is registered and not implemented.
+
     """
     key = name.lower()
     if key not in _REGISTRY:

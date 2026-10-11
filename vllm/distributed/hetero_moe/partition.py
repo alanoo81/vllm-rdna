@@ -17,6 +17,7 @@ class PairSplit:
         token_index: Token row of each cold pair, shape ``[P]``.
         expert_ids: Cold expert ids, shape ``[P]``.
         router_weights: Cold router weights, shape ``[P]``.
+
     """
 
     hot_ids: torch.Tensor
@@ -44,6 +45,7 @@ def partition_pairs(
 
     Returns:
         Hot tensors the local kernel can run, and one record per cold pair.
+
     """
     if topk_ids.shape != topk_weights.shape:
         raise ValueError("topk ids and weights must share a shape")
@@ -81,6 +83,7 @@ def wire_hidden(hidden: torch.Tensor, token_index: torch.Tensor) -> torch.Tensor
 
     Returns:
         ``[cold_pairs, hidden_size]`` in fp16.
+
     """
     if token_index.numel() == 0:
         return hidden.new_empty((0, hidden.shape[-1])).to(torch.float16)

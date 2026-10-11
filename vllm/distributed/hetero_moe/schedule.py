@@ -42,6 +42,7 @@ def begin_moe(
 
     Returns:
         A pending combine. The cold receive has not run.
+
     """
     assert_outside_capture(capturing)
     split = partition_pairs(topk_ids, topk_weights, hot)
@@ -68,6 +69,7 @@ def end_moe(pending: _Pending) -> torch.Tensor:
     Returns:
         Combined layer output in float64 when ``expert_fn`` returns
         float64, otherwise the combined dtype.
+
     """
     if not pending.deferred:
         return pending.hot_out
@@ -98,6 +100,7 @@ def run_split_moe(
 
     Returns:
         Combined expert output.
+
     """
     pending = begin_moe(
         hidden,

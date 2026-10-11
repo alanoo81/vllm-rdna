@@ -31,6 +31,7 @@ def assert_device_kernel(arch: str, kernel: str) -> None:
 
     Raises:
         RuntimeError: The object would be loaded on the wrong arch.
+
     """
     on_gfx1030 = arch == "gfx1030" or arch.startswith("gfx103")
     if on_gfx1030 and (kernel in RDNA3_WMMA_OBJECTS or "wmma" in kernel):
@@ -58,6 +59,7 @@ def select_hot_kernel(arch: str) -> str:
     Raises:
         RuntimeError: A gfx1030 device was asked to run the fast path.
         NotImplementedError: The arch is not the implemented gfx1100 tier.
+
     """
     if arch == "gfx1030" or arch.startswith("gfx103"):
         raise RuntimeError("fast tier must not run on the gfx1030 fatbin")
@@ -77,6 +79,7 @@ def select_cold_kernel(arch: str) -> str:
 
     Returns:
         ``moe_gptq_gemm_rdna2``.
+
     """
     assert_device_kernel(arch, COLD_W4A16_KERNEL)
     return COLD_W4A16_KERNEL

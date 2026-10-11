@@ -21,6 +21,7 @@ def hetero_moe_enabled(environ: Mapping[str, str] | None = None) -> bool:
 
     Returns:
         True only when the flag is the string ``1``.
+
     """
     env = os.environ if environ is None else environ
     return env.get(ENV_FLAG, "0") == "1"

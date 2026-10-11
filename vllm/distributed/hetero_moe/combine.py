@@ -23,6 +23,7 @@ def combine_rows(
 
     Returns:
         Combined tensor with ``hot_out``'s dtype and shape.
+
     """
     if token_index.numel() == 0:
         return hot_out

@@ -40,6 +40,7 @@ class ColdPayload:
         expert_ids: ``[P]`` expert ids.
         router_weights: ``[P]`` router weights.
         token_index: ``[P]`` positions in the original token batch.
+
     """
 
     hidden: torch.Tensor
@@ -62,6 +63,7 @@ class PeerProbe:
         access: ``(src, dst) -> hipDeviceCanAccessPeer``.
         nbytes: Bytes actually copied. Zero when nothing was timed.
         seconds: Measured elapsed seconds. Zero when nothing was timed.
+
     """
 
     passed: bool
@@ -88,6 +90,7 @@ def load_probe(path: str) -> PeerProbe | None:
 
     Returns:
         The probe, or None when ``path`` is empty.
+
     """
     if not path:
         return None
@@ -285,6 +288,7 @@ def build_transport(config, cold_fn):
     Raises:
         UnverifiedTransport: ``peer`` without a passing probe.
         ValueError: Unknown transport name.
+
     """
     if config.transport == "loopback":
         return LoopbackTransport(cold_fn)

@@ -39,6 +39,7 @@ def run_ping_pong(
 
     Raises:
         ValueError: A non-positive micro-batch or layer count.
+
     """
     if num_microbatches < 1 or num_layers < 1:
         raise ValueError("ping-pong needs at least one micro-batch and layer")

@@ -27,6 +27,7 @@ class HeteroRuntime:
         config: Serve-side config.
         transport: Built transport.
         num_experts: Routed experts per layer, if already known.
+
     """
 
     def __init__(self, config: HeteroMoEConfig, transport, num_experts: int | None):
@@ -73,6 +74,7 @@ class HeteroRuntime:
         Raises:
             RuntimeError: Called during graph capture, or before the
                 expert width is known.
+
         """
         if self.tracker is None:
             raise RuntimeError("finish_step before any expert width was bound")

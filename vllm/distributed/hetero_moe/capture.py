@@ -24,6 +24,7 @@ def assert_outside_capture(capturing: bool | None = None) -> None:
     Raises:
         RuntimeError: Capture is active. Transfers, histogram updates,
             and hot-set re-placement stay outside the captured region.
+
     """
     active = stream_is_capturing() if capturing is None else capturing
     if active:

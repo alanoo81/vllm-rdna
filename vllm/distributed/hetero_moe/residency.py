@@ -25,6 +25,7 @@ class ResidencyBridge:
 
     Args:
         module: Injected module, used by tests. None imports PR #37.
+
     """
 
     def __init__(self, module: object | None = None) -> None:
@@ -35,6 +36,7 @@ class ResidencyBridge:
 
         Raises:
             RuntimeError: The module or a required symbol is missing.
+
         """
         if self._module is None:
             try:
@@ -63,6 +65,7 @@ class ResidencyBridge:
 
         Returns:
             Slot ids from the cache.
+
         """
         self.module()
         return cache.prepare(topk_ids, expert_map, capturing=capturing)

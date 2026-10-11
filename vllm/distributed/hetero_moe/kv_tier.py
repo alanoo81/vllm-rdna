@@ -53,6 +53,7 @@ class HeteroKVTier:
 
     Args:
         capacity_blocks: Cold-pool block slots.
+
     """
 
     def __init__(self, capacity_blocks: int) -> None:
@@ -76,6 +77,7 @@ class HeteroKVTier:
 
         Raises:
             RefusedStateGroup: The group cannot be spilled.
+
         """
         name = group.lower()
         if name in REFUSED_GROUPS:
@@ -106,6 +108,7 @@ class HeteroKVTier:
         Returns:
             False when the capacity cannot hold the block. True when the
             block is resident on the cold tier (and gone from the fast map).
+
         """
         self.reject(group)
         if self.capacity_blocks < 1:
@@ -137,6 +140,7 @@ class HeteroKVTier:
         Returns:
             False when two slots are not available, leaving both halves
             unstored. True when both are stored under one LRU key.
+
         """
         self.reject("qsa_heap")
         if main_hash == compressed_hash:
@@ -171,6 +175,7 @@ class HeteroKVTier:
         Returns:
             The restored payloads, now in the fast map. No handle into
             the cold store is returned.
+
         """
         restored = {}
         for key in keys:
@@ -188,6 +193,7 @@ class HeteroKVTier:
 
         Raises:
             RemoteReadRefused: Always.
+
         """
         raise RemoteReadRefused(
             "refusing remote read of QSA/FA pages across the link; "

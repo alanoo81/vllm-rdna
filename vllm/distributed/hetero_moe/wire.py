@@ -26,6 +26,7 @@ def pack_tensors(payload: dict[str, torch.Tensor]) -> bytes:
 
     Returns:
         A ``torch.save`` blob.
+
     """
     cpu = {
         key: value.detach().to(device="cpu").contiguous()
@@ -44,6 +45,7 @@ def unpack_tensors(blob: bytes) -> dict[str, torch.Tensor]:
 
     Returns:
         CPU tensors.
+
     """
     loaded = torch.load(io.BytesIO(blob), map_location="cpu", weights_only=False)
     if not isinstance(loaded, dict):
@@ -67,6 +69,7 @@ def unframe(data: bytes) -> bytes:
 
     Raises:
         ValueError: The buffer is short or long.
+
     """
     if len(data) < _HEADER.size:
         raise ValueError("truncated frame header")
@@ -109,6 +112,7 @@ def shm_write_read(blob: bytes) -> bytes:
 
     Returns:
         The bytes read from the segment.
+
     """
     segment = shared_memory.SharedMemory(create=True, size=len(blob))
     try:
@@ -128,6 +132,7 @@ def stage_pinned(tensor: torch.Tensor) -> tuple[torch.Tensor, bool]:
     Returns:
         The staged CPU tensor and whether it is pinned. A CPU-only
         build may return an unpinned tensor; the flag says which.
+
     """
     cpu = tensor.detach().to(device="cpu").contiguous()
     try:
@@ -153,6 +158,7 @@ def exchange_tcp(blob: bytes, address: str, timeout: float = 5.0) -> bytes:
 
     Raises:
         ValueError: ``address`` is empty or has no port.
+
     """
     if not address or ":" not in address:
         raise ValueError("host-staged TCP needs host:port in VLLM_HETERO_MOE_HOST_ADDR")

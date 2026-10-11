@@ -40,6 +40,7 @@ def group_kind_from_layer_name(layer_name: str) -> str:
 
     Returns:
         ``full_attention``, a refused group, or a split QSA part.
+
     """
     lowered = layer_name.lower()
     for part in ("gdn", "ple", "mamba", "kda", "recurrent", "ssm"):

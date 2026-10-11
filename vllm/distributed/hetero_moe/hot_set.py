@@ -21,6 +21,7 @@ class HotSetTracker:
     Args:
         num_experts: Routed experts in each layer.
         alpha: EMA rate in ``(0, 1]``. ``1`` keeps only the latest step.
+
     """
 
     def __init__(self, num_experts: int, alpha: float = 0.2) -> None:
@@ -51,6 +52,7 @@ class HotSetTracker:
 
         Raises:
             RuntimeError: Called while capture is marked or live.
+
         """
         assert_outside_capture(self.capturing)
         self._ensure(layer)
@@ -83,6 +85,7 @@ class HotSetTracker:
 
         Returns:
             ``layer -> hot expert ids``. Also stored on ``self.hot``.
+
         """
         assert_outside_capture(self.capturing)
         if budget_bytes < 0:

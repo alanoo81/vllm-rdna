@@ -17,6 +17,7 @@ def shard_sizes(num_experts: int, num_devices: int) -> list[int]:
 
     Returns:
         One length per device, summing to ``num_experts``.
+
     """
     if num_experts < 0 or num_devices < 1:
         raise ValueError("need a non-negative expert count and one device")
@@ -35,6 +36,7 @@ def expert_owner(expert_id: int, num_experts: int, num_devices: int) -> int:
 
     Returns:
         Device index in ``[0, num_devices)``.
+
     """
     if expert_id < 0 or expert_id >= num_experts:
         raise ValueError("expert id out of range")
@@ -54,6 +56,7 @@ class ColdPoolRunner:
         bridge: PR #37 adapter. Optional in tests that have no cache.
         num_experts: Width of the owner map.
         num_devices: Cold-pool device count.
+
     """
 
     def __init__(
@@ -95,6 +98,7 @@ class ColdPoolRunner:
         Raises:
             RuntimeError: The layer would run a non-gfx1030 kernel, or
                 the arch is not gfx1030.
+
         """
         from vllm.distributed.hetero_moe.kernels import (
             COLD_W4A16_KERNEL,
