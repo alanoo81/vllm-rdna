@@ -130,6 +130,9 @@ GMEM=${GMEM:-${GPU_MEM:-}}
 HOST=${HOST-127.0.0.1}
 PORT=${PORT:-18094}
 TP=${TP:-4}
+# Pipeline stages (PP > 1 needs TP*PP GPUs in GPUIDS; PLE layers must sit on
+# stage 0, set VLLM_PP_LAYER_PARTITION if the default split moves them).
+PP=${PP:-1}
 BLOCK_SIZE=${BLOCK_SIZE:-}
 LPTH=${LPTH:-}
 PREFILL_INTERVAL=${PREFILL_INTERVAL:-}
@@ -298,6 +301,7 @@ cmd+=(--model "$MODEL")
 cmd+=(--port "$PORT")
 [[ -n $attention_backend ]] && cmd+=(--attention-backend "$attention_backend")
 cmd+=(--tensor-parallel-size "$TP" --dtype float16)
+[[ $PP != 1 ]] && cmd+=(--pipeline-parallel-size "$PP")
 [[ -n $BLOCK_SIZE ]] && cmd+=(--block-size "$BLOCK_SIZE")
 [[ -n $MAXLEN ]] && cmd+=(--max-model-len "$MAXLEN")
 cmd+=(--max-num-seqs "$SEQS" --max-num-batched-tokens "$MAXBAT")
